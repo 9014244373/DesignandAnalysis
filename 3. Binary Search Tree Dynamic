@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <limits.h>
+
+#define MAX 100
+
+void optimalBST(int keys[], float freq[], int n) {
+    float cost[MAX][MAX];
+    int root[MAX][MAX];
+    float sum[MAX][MAX] = {0};
+
+    int i = 0;
+    while (i < n) {
+        cost[i][i] = freq[i];
+        root[i][i] = i;
+        sum[i][i] = freq[i];
+        i++;
+    }
+
+    int l = 2;
+    while (l <= n) {
+        i = 0;
+        while (i <= n - l) {
+            int j = i + l - 1;
+            cost[i][j] = INT_MAX;
+            sum[i][j] = sum[i][j - 1] + freq[j];
+
+            int r = i;
+            while (r <= j) {
+                float c = ((r > i) ? cost[i][r - 1] : 0) + ((r < j) ? cost[r + 1][j] : 0) + sum[i][j];
+                if (c < cost[i][j]) {
+                    cost[i][j] = c;
+                    root[i][j] = r;
+                }
+                r++;
+            }
+            i++;
+        }
+        l++;
+    }
+
+    printf("The cost of the optimal BST is: %f\n", cost[0][n - 1]);
+
+    printf("The root matrix for the optimal BST is:\n");
+    i = 0;
+    while (i < n) {
+        int j = 0;
+        while (j < n) {
+            if (i <= j) {
+                printf("%d ", root[i][j]);
+            } else {
+                printf("  ");
+            }
+            j++;
+        }
+        printf("\n");
+        i++;
+    }
+}
+
+int main() {
+    int n;
+    printf("Enter the number of keys: ");
+    scanf("%d", &n);
+
+    int keys[MAX];
+    float freq[MAX];
+
+    printf("Enter the keys:\n");
+    int i = 0;
+    while (i < n) {
+        scanf("%d", &keys[i]);
+        i++;
+    }
+
+    printf("Enter the frequency of each key:\n");
+    i = 0;
+    while (i < n) {
+        scanf("%f", &freq[i]);
+        i++;
+    }
+
+    optimalBST(keys, freq, n);
+
+    return 0;
+}
+
